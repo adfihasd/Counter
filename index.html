@@ -418,6 +418,106 @@
       const n = parseInt(orderSelect.value);
       renderMatrixGrid(n);
     });
+
+    // ── UI 交互 ──
+    const solveBtn = document.getElementById('solve-btn');
+    const clearBtn = document.getElementById('clear-btn');
+
+    // 读取增广矩阵
+    function readAugmentedMatrix() {
+      const inputs = matrixContainer.querySelectorAll('input');
+      const n = parseInt(orderSelect.value);
+      const matrix = [];
+      for (let row = 0; row < n; row++) {
+        matrix[row] = [];
+        for (let col = 0; col < n + 1; col++) {
+          const input = matrixContainer.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
+          matrix[row][col] = parseInput(input ? input.value : '0');
+        }
+      }
+      return matrix;
+    }
+
+    // 渲染系数矩阵和增广矩阵（只读）
+    function renderResultMatrices(augMatrix) {
+      const n = augMatrix.length;
+      const existingDisplay = document.querySelector('.result-matrices');
+      if (existingDisplay) existingDisplay.remove();
+
+      const container = document.createElement('div');
+      container.className = 'result-matrices result-matrix-row';
+
+      // 系数矩阵 A
+      const aDiv = document.createElement('div');
+      aDiv.className = 'result-matrix';
+      aDiv.innerHTML = '<h3>系数矩阵 A</h3>';
+      const aGrid = document.createElement('div');
+      aGrid.className = 'result-grid';
+      aGrid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.textContent = augMatrix[r][c].toString();
+          aGrid.appendChild(cell);
+        }
+      }
+      aDiv.appendChild(aGrid);
+      container.appendChild(aDiv);
+
+      // 增广矩阵 [A|b]
+      const augDiv = document.createElement('div');
+      augDiv.className = 'result-matrix';
+      augDiv.innerHTML = '<h3>增广矩阵 [A|b]</h3>';
+      const augGrid = document.createElement('div');
+      augGrid.className = 'result-grid';
+      augGrid.style.gridTemplateColumns = `repeat(${n + 1}, 1fr)`;
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n + 1; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (c === n) cell.style.background = '#fef3c7';
+          cell.textContent = augMatrix[r][c].toString();
+          augGrid.appendChild(cell);
+        }
+      }
+      augDiv.appendChild(augGrid);
+      container.appendChild(augDiv);
+
+      resultDisplay.parentNode.insertBefore(container, resultDisplay);
+    }
+
+    // 求解
+    solveBtn.addEventListener('click', () => {
+      const augMatrix = readAugmentedMatrix();
+      const result = gaussElimination(augMatrix);
+
+      renderResultMatrices(augMatrix);
+
+      if (result.type === 'unique') {
+        const parts = result.solution.map((x, i) => {
+          let formatted = x.toString();
+          return `x<sub>${i + 1}</sub> = ${formatted}`;
+        });
+        resultDisplay.innerHTML = parts.join('<br>');
+        resultDisplay.style.color = '#333';
+      } else if (result.type === 'no-solution') {
+        resultDisplay.innerHTML = '⚠️ 方程组无解';
+        resultDisplay.style.color = '#dc2626';
+      } else if (result.type === 'infinite-solutions') {
+        resultDisplay.innerHTML = '⚠️ 方程组有无穷多解';
+        resultDisplay.style.color = '#e67e00';
+      }
+    });
+
+    // 清空
+    clearBtn.addEventListener('click', () => {
+      const inputs = matrixContainer.querySelectorAll('input');
+      inputs.forEach(input => { input.value = ''; });
+      const existingDisplay = document.querySelector('.result-matrices');
+      if (existingDisplay) existingDisplay.remove();
+      resultDisplay.innerHTML = '';
+    });
   </script>
 </body>
 </html>
