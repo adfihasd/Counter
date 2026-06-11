@@ -320,68 +320,66 @@
 
     // ── 高斯消元（列主元）──
     function gaussElimination(augMatrix) {
-      // augMatrix: n × (n+1) 的 Fraction[][]
       const n = augMatrix.length;
-      const m = [...augMatrix.map(row => [...row])]; // 深拷贝
+      const m = [...augMatrix.map(row => [...row])];
 
-      // 前向消元
-      for (let col = 0; col < n; col++) {
-        // 列主元选取
-        let maxRow = col;
-        let maxVal = m[col][col].abs();
-        for (let row = col + 1; row < n; row++) {
-          const val = m[row][col].abs();
-          if (val.num > maxVal.num || (val.num === maxVal.num && val.den < maxVal.den)) {
+      let row = 0;
+      for (let col = 0; col < n && row < n; col++) {
+        // 列主元选取（从当前 row 开始）
+        let maxRow = row;
+        let maxVal = m[row][col].abs();
+        for (let r = row + 1; r < n; r++) {
+          const val = m[r][col].abs();
+          if (val.num * maxVal.den > maxVal.num * val.den) {
             maxVal = val;
-            maxRow = row;
+            maxRow = r;
           }
         }
 
-        // 奇异矩阵检查
+        // 如果主元为 0，跳过该列（自由变量），不推进行
         if (m[maxRow][col].isZero()) {
-          // 判断无解 vs 无穷多解
-          const rankA = col; // 当前列之前都是线性无关的
-          // 检查增广列
-          let augmentedRank = rankA;
-          for (let row = col; row < n; row++) {
-            if (!m[row][n].isZero()) {
-              augmentedRank = rankA + 1;
-              break;
-            }
-          }
-          if (augmentedRank > rankA) return { type: 'no-solution' };
-          return { type: 'infinite-solutions' };
+          continue;
         }
 
         // 交换行
-        if (maxRow !== col) {
-          [m[col], m[maxRow]] = [m[maxRow], m[col]];
+        if (maxRow !== row) {
+          [m[row], m[maxRow]] = [m[maxRow], m[row]];
         }
 
         // 归一化主元行
-        const pivot = m[col][col];
+        const pivot = m[row][col];
         for (let j = col; j <= n; j++) {
-          m[col][j] = m[col][j].div(pivot);
+          m[row][j] = m[row][j].div(pivot);
         }
 
-        // 消去下方行
-        for (let row = col + 1; row < n; row++) {
-          const factor = m[row][col];
+        // 消去所有其他行（不仅仅是下方）以得到 RREF
+        for (let r = 0; r < n; r++) {
+          if (r === row) continue;
+          const factor = m[r][col];
           if (factor.isZero()) continue;
           for (let j = col; j <= n; j++) {
-            m[row][j] = m[row][j].sub(factor.mul(m[col][j]));
+            m[r][j] = m[r][j].sub(factor.mul(m[row][j]));
           }
+        }
+
+        row++;
+      }
+
+      // 判断是否有解
+      for (let r = row; r < n; r++) {
+        if (!m[r][n].isZero()) {
+          return { type: 'no-solution' };
         }
       }
 
-      // 回代
-      const x = new Array(n).fill(null);
-      for (let i = n - 1; i >= 0; i--) {
-        let sum = new Fraction(0);
-        for (let j = i + 1; j < n; j++) {
-          sum = sum.add(m[i][j].mul(x[j]));
-        }
-        x[i] = m[i][n].sub(sum);
+      if (row < n) {
+        return { type: 'infinite-solutions' };
+      }
+
+      // 提取解（RREF 形式，每行直接对应一个变量）
+      const x = new Array(n);
+      for (let i = 0; i < n; i++) {
+        x[i] = m[i][n];
       }
 
       return { type: 'unique', solution: x };
