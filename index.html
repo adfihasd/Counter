@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>线性方程组求解器</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    header {
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin: 12px 0 8px;
+    }
+
+    section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .order-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .order-section label {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .order-section select {
+      font-size: 1rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: #fff;
+      min-width: 64px;
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      min-height: 44px;
+      min-width: 80px;
+      touch-action: manipulation;
+    }
+
+    #solve-btn {
+      background: #2563eb;
+      color: #fff;
+      flex: 1;
+    }
+
+    #clear-btn {
+      background: #e5e7eb;
+      color: #333;
+      flex: 1;
+    }
+
+    #result-display {
+      min-height: 40px;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📐 线性方程组求解器</h1>
+    </header>
+    <main>
+      <section class="order-section">
+        <label for="order-select">矩阵阶数：</label>
+        <select id="order-select">
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </section>
+      <section class="matrix-section">
+        <h2>增广矩阵输入</h2>
+        <p class="hint">支持整数 <code>2</code>、分数 <code>1/2</code>、小数 <code>0.5</code></p>
+        <div id="matrix-container"></div>
+        <div class="button-row">
+          <button id="solve-btn">求解</button>
+          <button id="clear-btn">清空</button>
+        </div>
+      </section>
+      <section class="result-section">
+        <h2>结果</h2>
+        <div id="result-display"></div>
+      </section>
+    </main>
+  </div>
+  <script>
+    // JS 占位，后续步骤填充
+  </script>
+</body>
+</html>
