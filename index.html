@@ -174,6 +174,70 @@
       font-size: 0.9rem;
       background: #fafafa;
     }
+
+    /* 移动端优化 */
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 1.2rem;
+      }
+
+      section {
+        padding: 12px;
+        border-radius: 10px;
+      }
+
+      .matrix-grid {
+        gap: 4px;
+      }
+
+      .matrix-grid input {
+        font-size: 0.85rem;
+        min-height: 40px;
+        padding: 2px;
+        border-radius: 6px;
+      }
+
+      .result-matrix-row {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+
+    /* 小屏手机 (320px) 进一步缩小 */
+    @media (max-width: 360px) {
+      .matrix-grid input {
+        font-size: 0.75rem;
+        min-height: 36px;
+      }
+
+      .container {
+        padding: 6px;
+      }
+
+      section {
+        padding: 8px;
+      }
+
+      button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* 横屏/大阶数兜底 */
+    .matrix-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* 避免 iOS 缩放输入框 */
+    input[type="text"] {
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -387,6 +451,9 @@
 
     function renderMatrixGrid(n) {
       matrixContainer.innerHTML = '';
+      const scrollWrapper = document.createElement('div');
+      scrollWrapper.className = 'matrix-scroll';
+
       const grid = document.createElement('div');
       grid.className = 'matrix-grid';
       // n 行, n+1 列
@@ -407,7 +474,8 @@
         }
       }
 
-      matrixContainer.appendChild(grid);
+      scrollWrapper.appendChild(grid);
+      matrixContainer.appendChild(scrollWrapper);
     }
 
     // 初始渲染
