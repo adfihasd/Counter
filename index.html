@@ -216,6 +216,108 @@
     const orderSelect = document.getElementById('order-select');
     const resultDisplay = document.getElementById('result-display');
 
+    // ── Fraction 有理数类 ──
+    class Fraction {
+      constructor(num, den = 1) {
+        if (den < 0) { num = -num; den = -den; }
+        if (num === 0) { den = 1; }
+        const g = Fraction.gcd(Math.abs(num), Math.abs(den));
+        this.num = num / g;
+        this.den = den / g;
+      }
+
+      static gcd(a, b) {
+        while (b !== 0) { [a, b] = [b, a % b]; }
+        return a;
+      }
+
+      add(other) {
+        const o = Fraction.from(other);
+        return new Fraction(this.num * o.den + o.num * this.den, this.den * o.den);
+      }
+
+      sub(other) {
+        const o = Fraction.from(other);
+        return new Fraction(this.num * o.den - o.num * this.den, this.den * o.den);
+      }
+
+      mul(other) {
+        const o = Fraction.from(other);
+        return new Fraction(this.num * o.num, this.den * o.den);
+      }
+
+      div(other) {
+        const o = Fraction.from(other);
+        if (o.num === 0) throw new Error('Division by zero');
+        return new Fraction(this.num * o.den, this.den * o.num);
+      }
+
+      neg() {
+        return new Fraction(-this.num, this.den);
+      }
+
+      isZero() {
+        return this.num === 0;
+      }
+
+      abs() {
+        return new Fraction(Math.abs(this.num), this.den);
+      }
+
+      toString() {
+        if (this.den === 1) return `${this.num}`;
+        return `${this.num}/${this.den}`;
+      }
+
+      toDecimal(precision = 6) {
+        const val = this.num / this.den;
+        return parseFloat(val.toPrecision(precision));
+      }
+
+      static from(val) {
+        if (val instanceof Fraction) return val;
+        if (typeof val === 'number') return Fraction.fromDecimal(val);
+        if (typeof val === 'string') return parseInput(val);
+        throw new Error(`Cannot convert to Fraction: ${val}`);
+      }
+
+      static fromDecimal(dec) {
+        if (Number.isInteger(dec)) return new Fraction(dec);
+        // 分数化：找到分母
+        const s = dec.toString();
+        const parts = s.split('.');
+        if (parts.length === 1) return new Fraction(dec);
+        const decimalPlaces = parts[1].length;
+        const den = Math.pow(10, decimalPlaces);
+        const num = Math.round(dec * den);
+        return new Fraction(num, den);
+      }
+    }
+
+    // ── 输入解析 ──
+    function parseInput(str) {
+      str = str.trim();
+      if (str === '') return new Fraction(0);
+
+      // 分数格式 "a/b"
+      if (str.includes('/')) {
+        const parts = str.split('/');
+        if (parts.length !== 2) return new Fraction(0);
+        const num = parseFloat(parts[0]);
+        const den = parseFloat(parts[1]);
+        if (isNaN(num) || isNaN(den) || den === 0) return new Fraction(0);
+        if (Number.isInteger(num) && Number.isInteger(den)) {
+          return new Fraction(num, den);
+        }
+        return new Fraction(num).div(new Fraction(den));
+      }
+
+      // 小数或整数
+      const val = parseFloat(str);
+      if (isNaN(val)) return new Fraction(0);
+      return Fraction.fromDecimal(val);
+    }
+
     function renderMatrixGrid(n) {
       matrixContainer.innerHTML = '';
       const grid = document.createElement('div');
