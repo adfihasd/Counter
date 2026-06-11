@@ -110,6 +110,70 @@
       font-size: 1.05rem;
       line-height: 1.8;
     }
+
+    /* 矩阵网格 */
+    .matrix-grid {
+      display: grid;
+      gap: 6px;
+      margin: 8px 0;
+    }
+
+    .matrix-grid input {
+      width: 100%;
+      aspect-ratio: 1.5;
+      min-height: 44px;
+      text-align: center;
+      font-size: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .matrix-grid input:focus {
+      outline: 2px solid #2563eb;
+      outline-offset: -1px;
+    }
+
+    /* 常数项列背景色 */
+    .matrix-grid .augmented-col {
+      background: #fef3c7;
+      border-color: #f59e0b;
+    }
+
+    .result-matrix-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .result-matrix {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .result-matrix h3 {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #666;
+    }
+
+    .result-grid {
+      display: grid;
+      gap: 4px;
+      border-collapse: collapse;
+    }
+
+    .result-grid .cell {
+      text-align: center;
+      padding: 4px 8px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      background: #fafafa;
+    }
   </style>
 </head>
 <body>
@@ -148,7 +212,43 @@
     </main>
   </div>
   <script>
-    // JS 占位，后续步骤填充
+    const matrixContainer = document.getElementById('matrix-container');
+    const orderSelect = document.getElementById('order-select');
+    const resultDisplay = document.getElementById('result-display');
+
+    function renderMatrixGrid(n) {
+      matrixContainer.innerHTML = '';
+      const grid = document.createElement('div');
+      grid.className = 'matrix-grid';
+      // n 行, n+1 列
+      grid.style.gridTemplateColumns = `repeat(${n + 1}, 1fr)`;
+
+      for (let row = 0; row < n; row++) {
+        for (let col = 0; col < n + 1; col++) {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.inputMode = 'decimal';
+          input.placeholder = '0';
+          input.dataset.row = row;
+          input.dataset.col = col;
+          if (col === n) {
+            input.classList.add('augmented-col');
+          }
+          grid.appendChild(input);
+        }
+      }
+
+      matrixContainer.appendChild(grid);
+    }
+
+    // 初始渲染
+    renderMatrixGrid(3);
+
+    // 阶数切换
+    orderSelect.addEventListener('change', () => {
+      const n = parseInt(orderSelect.value);
+      renderMatrixGrid(n);
+    });
   </script>
 </body>
 </html>
